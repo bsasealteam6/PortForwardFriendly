@@ -35,7 +35,7 @@ function App() {
         forwarded ? (
           <Button onClick = {closeForwarding}>Close Forwarding</Button>
         ):(
-          <OpenForwarding />
+          <OpenForwarding setForwarded={setForwarded} />
         
         )
       )}

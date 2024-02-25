@@ -3,7 +3,7 @@ import React from 'react'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
-const OpenForwarding = () => {
+const OpenForwarding = (props) => {
     const openForwarding = async () => {
         const sourcePort = document.getElementById('sourcePort').value
         const destinationPort = document.getElementById('destinationPort').value
@@ -26,6 +26,7 @@ const OpenForwarding = () => {
              })
         })
         const data = await response.json()
+        props.setForwarded(data.forwarded)
         console.log(data)
     }
     return (
