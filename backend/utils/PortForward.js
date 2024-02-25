@@ -1,5 +1,7 @@
 const udpf = require('node-udp-forwarder');
 const net = require('net');
+let udpForwarder = null;
+let tcpForwarder = null;
 const portForward = (sourcePort, destinationPort, destinationHost, protocol) => {
     if (protocol === 'udp') {
         const options = {
@@ -7,17 +9,17 @@ const portForward = (sourcePort, destinationPort, destinationHost, protocol) => 
             port: sourcePort,
             address: "0.0.0.0",
         }
-        udpf.create(destinationPort, destinationHost, options);
+        udpForwarder = udpf.create(destinationPort, destinationHost, options);
     }
     else if (protocol === 'tcp') {
-        forwardTCP(sourcePort, destinationPort, destinationHost);
+        tcpForwarder = forwardTCP(sourcePort, destinationPort, destinationHost);
     }
     else {
         throw new Error('Protocol not supported');
     }
 }
 const forwardTCP = (sourcePort, destinationPort, destinationHost) => {
-    net.createServer((sourceSocket) => {
+    let server = net.createServer((sourceSocket) => {
         var buff = "";
         var connected = false;
         var cli = net.createConnection(destinationPort, destinationHost);
@@ -36,5 +38,16 @@ const forwardTCP = (sourcePort, destinationPort, destinationHost) => {
         });
         cli.pipe(sourceSocket);
     }).listen(sourcePort);
+    return server;
 }
-module.exports = portForward;
+const closeForwardedPorts = () => {
+    if(udpForwarder){
+        udpForwarder.end();
+        udpForwarder = null;
+    }
+    if(tcpForwarder){
+        tcpForwarder.close();
+        tcpForwarder = null;
+    }
+}
+module.exports = [portForward, closeForwardedPorts];
