@@ -9,6 +9,10 @@ const OpenForwarding = () => {
         const destinationPort = document.getElementById('destinationPort').value
         const destinationHost = document.getElementById('destinationHost').value
         const protocol = document.getElementById('protocol').value
+        if (sourcePort === '' || destinationPort === '' || destinationHost === '') {
+            alert('Please fill in all the fields')
+            return
+        }
         const response = await fetch('/api/forward', {
             method: 'POST',
             headers: {
